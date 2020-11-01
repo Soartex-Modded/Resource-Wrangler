@@ -2,18 +2,18 @@ from setuptools import setup
 
 setup(
     package_data={
-        "resource_manager.utilities": [
+        "resource_wrangler.utilities": [
             "root/pack.png",
             "root/README.md"
         ],
-        "resource_manager": [
+        "resource_wrangler": [
             "configs/pipelines.toml",
             "configs/resources.toml"
         ]
     },
     entry_points={
         'console_scripts': [
-            'resource_manage = resource_manager.main:main',
+            'wrangle_resource = resource_wrangler.main:main',
         ],
     },
 )

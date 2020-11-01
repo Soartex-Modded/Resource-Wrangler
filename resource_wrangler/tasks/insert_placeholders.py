@@ -4,7 +4,7 @@ import shutil
 from PIL import Image
 import PIL
 
-from resource_manager.tasks.port_patches import get_domain, infer_patch_name
+from resource_wrangler.tasks.port_patches import get_domain, infer_patch_name
 
 default_prefix = "__default_"
 

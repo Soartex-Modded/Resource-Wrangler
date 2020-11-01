@@ -1,11 +1,11 @@
 import os
 
-from resource_manager.gui_builder import detect_regions, build_gui
-from resource_manager.main import run
+from resource_wrangler.gui_builder import detect_regions, build_gui
+from resource_wrangler.main import run
 
 
 def test_gui_builder():
-    template_dir = "/Users/michael/graphics/fanver/Templates/python_package/resource_manager/configs/gui_templates/"
+    template_dir = "/Users/michael/graphics/fanver/Resource-Wrangler/resource_wrangler/configs/gui_templates/"
 
     test_path = "/Users/michael/graphics/fanver/Templates/python_package/app_test.png"
     colossal_gui_path = "/Users/michael/graphics/default/Modded-1.15.x/Colossal_Chests/assets/colossalchests/textures/gui/colossal_chest.png"

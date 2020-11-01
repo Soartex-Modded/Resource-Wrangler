@@ -4,7 +4,7 @@ import shutil
 from PIL import Image
 import PIL
 import numpy as np
-from resource_manager.tasks.port_patches import infer_patch_name
+from resource_wrangler.tasks.port_patches import infer_patch_name
 from scipy.stats.stats import pearsonr
 
 try:
@@ -33,7 +33,7 @@ def find_similar(scale, resource_patches_dir, default_dir, develop_dir=None):
     resource_patches_dir = os.path.expanduser(resource_patches_dir)
     default_dir = os.path.expanduser(default_dir)
     if not develop_dir:
-        develop_dir = "~/Desktop/resource_manager_development"
+        develop_dir = "~/Desktop/resource_wrangler_development"
     develop_dir = os.path.expanduser(develop_dir)
     print("Working from:", develop_dir)
 

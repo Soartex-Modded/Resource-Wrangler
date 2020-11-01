@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from resource_manager.gui_builder.utilities import TemplateLoader, Region
+from resource_wrangler.gui_builder.utilities import TemplateLoader, Region
 
 import numpy as np
 from PIL import Image

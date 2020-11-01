@@ -10,6 +10,14 @@ def detect_overwrites(patches_dir):
     patches_dir = os.path.expanduser(patches_dir)
     patch_map = {}
 
+    for walk_dir, _, _ in os.walk(patches_dir, topdown=False):
+        if walk_dir == patches_dir:
+            break
+        try:
+            os.rmdir(walk_dir)
+        except OSError:
+            pass
+
     for patch_name in os.listdir(patches_dir):
         if patch_name == '.git':
             continue

@@ -1,7 +1,7 @@
 import os
 import shutil
 
-import resource_manager.tasks as tasks
+import resource_wrangler.tasks as tasks
 import time
 import json
 
@@ -150,7 +150,7 @@ def run_prune_files(config, resources, pipelines):
 
 def run_detect_overwrites(config, resources, pipelines):
     """run a task that detects files that are duplicated in multiple patches"""
-    print("Detecting overwritten files.")
+    print(f"Detecting overwritten files in {config['resource']}")
     tasks.detect_overwrites(patches_dir=resources[config['resource']]['patches_dir'])
 
 

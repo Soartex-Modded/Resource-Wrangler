@@ -1,7 +1,7 @@
 import json
 import os
 
-from resource_manager.gui_builder.utilities import TemplateLoader, Region
+from resource_wrangler.gui_builder.utilities import TemplateLoader, Region
 from typing import List
 import numpy as np
 import math
