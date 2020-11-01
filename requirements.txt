@@ -5,3 +5,5 @@ toml>=0.10.1
 Pillow>=8
 # Tkinter
 scipy>=1.5.3
+sqlalchemy
+watchdog

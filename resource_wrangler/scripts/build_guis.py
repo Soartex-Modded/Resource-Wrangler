@@ -9,7 +9,7 @@ except ModuleNotFoundError:
 
 from resource_wrangler.gui_builder.builder import build_gui
 from resource_wrangler.gui_builder.detector import detect_regions
-from resource_wrangler.tasks.port_patches import get_patch_names
+from resource_wrangler.scripts.port_patches import get_patch_names
 
 
 templates_dir = os.sep + os.path.join(

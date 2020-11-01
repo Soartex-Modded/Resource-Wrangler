@@ -1,12 +1,12 @@
 import os
 import shutil
 
-import resource_wrangler.tasks as tasks
+import resource_wrangler.scripts as scripts
 import time
 import json
 
 # OVERVIEW
-# functions in this file use the pipeline/task config and resource metadata to call out to functions in the tasks folder
+# functions in this file use the pipeline/task config and resource metadata to call out to functions in the scripts folder
 
 
 def run_pipeline(config, resources, pipelines):
@@ -53,12 +53,12 @@ def run_pipeline(config, resources, pipelines):
 
 def run_parallel(config, resources, pipelines):
     """run a task that executes all tasks in a pipeline on different processes"""
-    # This task probably doesn't have great benefits, as most of these tasks are bound by disk transfer
+    # This task probably doesn't have great benefits, as most of these scripts are bound by disk transfer
     print("Running in parallel:", config['pipeline'])
     if config['pipeline'] not in pipelines:
         raise ValueError(f"Pipeline not recognized: {config['pipeline']}")
 
-    tasks.parallel(pipelines[config['pipeline']], run_pipeline, args=(resources, pipelines))
+    scripts.parallel(pipelines[config['pipeline']], run_pipeline, args=(resources, pipelines))
 
 
 def run_apply(config, resources, pipelines):
@@ -83,21 +83,21 @@ def run_extract_default(config, resources, pipelines):
     """run a task that unpacks mod .jar files into a patches directory"""
     resource = resources[config['resource']]
     print("Extracting mods.")
-    tasks.extract_default(resource['mods_dirs'], resource['patches_dir'])
+    scripts.extract_default(resource['mods_dirs'], resource['patches_dir'])
 
 
 def run_link_resource(config, resources, pipelines):
     """run a task that creates symlinks from multiple minecraft instances to a resource pack directory"""
     resource = resources[config['resource']]
     print("Linking resources.")
-    tasks.link_resource(resource['link_dirs'], resource['pack_dir'])
+    scripts.link_resource(resource['link_dirs'], resource['pack_dir'])
 
 
 def run_unlink_resource(config, resources, pipelines):
     """run a task that destroys all symlinks currently associated with the resource"""
     resource = resources[config['resource']]
     print("Unlinking resources.")
-    tasks.unlink_resource(resource['link_dirs'])
+    scripts.unlink_resource(resource['link_dirs'])
 
 
 def run_merge_patches(config, resources, pipelines):
@@ -106,7 +106,7 @@ def run_merge_patches(config, resources, pipelines):
     print("Resource:", json.dumps(resource, indent=4))
     print("Merging patches.")
     start_time = time.time()
-    tasks.merge_patches(
+    scripts.merge_patches(
         patches_dir=resource['patches_dir'],
         pack_dir=resource['pack_dir'],
         pack_format=resource['pack_format'],
@@ -119,13 +119,13 @@ def run_watch_changes(config, resources, pipelines):
     """run a task that watches for filesystem changes in a patches dir, and syncs those changes with a resource pack"""
     resources = [resources[resource_id] for resource_id in config['resources']]
     print(f"Watching for changes in {[res['patches_dir'] for res in resources]}.")
-    tasks.watch_changes(resources)
+    scripts.watch_changes(resources)
 
 
 def run_port_patches(config, resources, pipelines):
     """run a task that uses md5 image hashes to detect and fill equivalent images"""
     print("Porting", config)
-    tasks.port_patches(
+    scripts.port_patches(
         default_prior_dir=resources[config['default_prior']]['pack_dir'],
         default_post_dir=resources[config['default_post']]['pack_dir'],
         resource_prior_patches_dir=resources[config['resource_prior']]['patches_dir'],
@@ -140,7 +140,7 @@ def run_port_patches(config, resources, pipelines):
 def run_prune_files(config, resources, pipelines):
     """run a task that removes files from a patches directory that are not present in the default textures"""
     print("Pruning files.")
-    tasks.prune_files(
+    scripts.prune_files(
         patches_dir=resources[config['resource']]['patches_dir'],
         default_pack_dir=resources[config['resource_default']]['pack_dir'],
         pruned_dir=config['pruned_dir'],
@@ -151,13 +151,13 @@ def run_prune_files(config, resources, pipelines):
 def run_detect_overwrites(config, resources, pipelines):
     """run a task that detects files that are duplicated in multiple patches"""
     print(f"Detecting overwritten files in {config['resource']}")
-    tasks.detect_overwrites(patches_dir=resources[config['resource']]['patches_dir'])
+    scripts.detect_overwrites(patches_dir=resources[config['resource']]['patches_dir'])
 
 
 def run_download_mods(config, resources, pipelines):
     """run a task that downloads the history of the top K mods from CurseForge"""
     print("Downloading mods.")
-    tasks.download_mods(
+    scripts.download_mods(
         mods_dirs=config['mods_dirs'],
         database_path=config['database_path'],
         mod_limit=config['mod_limit']
@@ -167,7 +167,7 @@ def run_download_mods(config, resources, pipelines):
 def run_download_resource(config, resources, pipelines):
     """run a task that downloads git, curseforge, or url assets, or unpacks vanilla .jar files, to set up a resource"""
     print("Downloading resource.")
-    tasks.download_resource(
+    scripts.download_resource(
         resources[config['resource']]
     )
 
@@ -196,19 +196,19 @@ def run_run_subprocess(config, resources, pipelines):
     print("Running subprocess.")
     print("cmd:", config['cmd'])
     print("pwd:", resources[config['resource']][config['folder']])
-    tasks.run_subprocess(cmd=config['cmd'], cwd=resources[config['resource']][config['folder']])
+    scripts.run_subprocess(cmd=config['cmd'], cwd=resources[config['resource']][config['folder']])
 
 
 def run_fix_mod_jsons(config, resources, pipelines):
     """run a task that validates and fixes mod.json files in patch directories"""
     print("Fixing mod.jsons in", config['resource'])
-    tasks.fix_mod_jsons(patches_dir=resources[config['resource']]['patches_dir'])
+    scripts.fix_mod_jsons(patches_dir=resources[config['resource']]['patches_dir'])
 
 
 def run_build_guis(config, resources, pipelines):
     """run a task that detects and builds GUIs from template files"""
     print("Building GUIs.")
-    tasks.build_guis(
+    scripts.build_guis(
         resource_dir=resources[config['resource']]['pack_dir'],
         resource_patches_dir=resources[config['resource']]['patches_dir'],
         default_dir=resources[config['resource_default']]['pack_dir'],
@@ -219,7 +219,7 @@ def run_build_guis(config, resources, pipelines):
 def run_insert_placeholders(config, resources, pipelines):
     """run a task that adds default textures to a patches directory"""
     print("Inserting placeholders.")
-    tasks.insert_placeholders(
+    scripts.insert_placeholders(
         scale=config['scale'],
         resource_dir=resources[config['resource']]['pack_dir'],
         resource_patches_dir=resources[config['resource']]['patches_dir'],
@@ -229,7 +229,7 @@ def run_insert_placeholders(config, resources, pipelines):
 def run_find_similar(config, resources, pipelines):
     """run a task that assists in texturing many similar files at once"""
     print("Finding similar images.")
-    tasks.find_similar(
+    scripts.find_similar(
         scale=config['scale'],
         resource_patches_dir=resources[config['resource']]['patches_dir'],
         default_dir=resources[config['resource_default']]['pack_dir'],
@@ -239,4 +239,4 @@ def run_find_similar(config, resources, pipelines):
 def run_detect_broken_animations(config, resources, pipelines):
     """run a task that assists in texturing many similar files at once"""
     print("Detecting broken animations.")
-    tasks.detect_broken_animations(pack_dir=resources[config['resource']]['pack_dir'])
+    scripts.detect_broken_animations(pack_dir=resources[config['resource']]['pack_dir'])

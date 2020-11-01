@@ -4,7 +4,7 @@ import shutil
 from PIL import Image
 import PIL
 import numpy as np
-from resource_wrangler.tasks.port_patches import infer_patch_name
+from resource_wrangler.scripts.port_patches import infer_patch_name
 from scipy.stats.stats import pearsonr
 
 try:
