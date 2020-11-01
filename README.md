@@ -16,7 +16,7 @@ The package also has a "pipeline" system to run multiple scripts sequentially wi
 ```shell script
 wrangle_resource 1.12_merge_fanver
 ``` 
-This command runs the `1.12_merge_fanver` pipeline. 
+This terminal command runs the `1.12_merge_fanver` pipeline. 
 A pipeline runs multiple tasks sequentially. 
 Each task runs a script with filesystem paths pulled from resources.
 Resources contain paths to a patch directory, pack directory, git remote, locations of mod directories, etc.  
@@ -29,13 +29,14 @@ While the terminal session is running, any edits made to the patch repository wi
 
 ## Installation
 1. Install Python (at least version 3.6)
-2. Run the following command in the terminal.
+2. Run the following in the terminal.
 ```shell script
 git clone git@github.com:Soartex-Modded/Resource-Wrangler.git
 cd Resource-Wrangler
 pip3 install -r requirements.txt
 pip3 install -e .
 ````
+3. Edit any relevant paths in [resources.toml](resource_wrangler/configs/resources.toml) to suit your filesystem. 
 
 
 ## Scripts
@@ -47,7 +48,7 @@ Unzip resources from a list of folder paths containing mod jars.
 Merge mod patches (soartex, invictus, default, jstr, etc.) into a single resource pack.
 
 ### Link Resources
-Create the symbolic links described in the resource `links_dirs` to the `pack_dir`.
+Create the symbolic links described in the resource `link_dirs` to the `pack_dir`.
 
 ### Watch Changes
 Script to live-maintain multiple resource packs built from mod patches, from multiple repositories of mod patches.  
