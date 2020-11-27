@@ -4,10 +4,7 @@ This is a Python package containing scripts for working on repositories of resou
 ```python
 # example python usage
 from resource_wrangler import scripts
-scripts.merge_patches(
-    "~/graphics/fanver/Modded-1.12.x/",
-    "~/graphics-merged/fanver/Modded-1.12.x/", 
-    pack_format=3)
+scripts.merge_patches("~/graphics/fanver/Modded-1.12.x/","~/graphics-merged/fanver/Modded-1.12.x/",pack_format=3)
 ```
 
 ## Pipelines and Resources
@@ -28,7 +25,12 @@ This pipeline merges patches, creates symlinks to the merged pack from your mine
 While the terminal session is running, any edits made to the patch repository will appear [when you refresh assets with F3+T](https://minecraft.gamepedia.com/Debug_screen#More_debug-keys) in-game. 
 
 ## Installation
-1. Install Python (at least version 3.6)
+1. Install Python
+    - at least version 3.6
+    - If using an installer, be sure to enable "Add Python 3.x to PATH"
+2. Install Git
+    - Windows: consider 'Git for Windows'
+    - Mac or Linux: try typing `git` in the terminal 
 2. Run the following in the terminal.
 ```shell script
 git clone git@github.com:Soartex-Modded/Resource-Wrangler.git

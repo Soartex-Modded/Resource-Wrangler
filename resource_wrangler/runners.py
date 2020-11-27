@@ -48,6 +48,8 @@ def run_pipeline(config, resources, pipelines):
 
     # run every step in the pipeline
     for task in pipelines[config['pipeline']]:
+        if task is None:
+            continue
         task_runners[task['task']](task, resources, pipelines)
 
 
@@ -106,11 +108,10 @@ def run_merge_patches(config, resources, pipelines):
     print("Resource:", json.dumps(resource, indent=4))
     print("Merging patches.")
     start_time = time.time()
-    scripts.merge_patches(
-        patches_dir=resource['patches_dir'],
-        pack_dir=resource['pack_dir'],
-        pack_format=resource['pack_format'],
-        enable_patch_map=True)
+    scripts.merge_patches(patches_dir=resource['patches_dir'], pack_dir=resource['pack_dir'],
+                          pack_format=resource.get('pack_format'),
+                          enable_patch_map=resource.get('enable_patch_map', True),
+                          blacklist=config.get('blacklist'))
     elapsed_time = time.time() - start_time
     print(f"Patches merged in {round(elapsed_time)} seconds.")
 

@@ -1,5 +1,6 @@
 setuptools>=41.4.0
-numpy>=1.19.2
+# 1.19.4 is not compatible with windows. otherwise 1.19.4 is fine
+numpy<1.19.4
 requests>=2.24.0
 toml>=0.10.1
 Pillow>=8

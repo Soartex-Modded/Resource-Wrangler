@@ -74,10 +74,13 @@ def download_mods(mods_dirs, database_path, mod_limit=100):
                     if versioned_mod_files[minor_version]['patch_version'] > patch_version:
                         continue
 
-                versioned_mod_files[minor_version] = {
-                    'patch_version': patch_version,
-                    'value': mod_file_meta
-                }
+                prior_file_id = versioned_mod_files.get(minor_version, {}).get('value', {}).get('projectFileId', 0)
+
+                if mod_file_meta['projectFileId'] > prior_file_id:
+                    versioned_mod_files[minor_version] = {
+                        'patch_version': patch_version,
+                        'value': mod_file_meta
+                    }
 
             for minor_version in versioned_mod_files:
 
@@ -99,8 +102,9 @@ def download_mods(mods_dirs, database_path, mod_limit=100):
 
                 available_file_name = mod_file_meta['projectFileName']
 
-                stored_file_name = engine.execute(select([mod_files.c.file_name])
-                    .where((mod_files.c.mod_id == mod_meta['id']) & (mod_files.c.vanilla_minor_version == minor_version))).scalar()
+                stored_file_name = engine.execute(select([mod_files.c.file_name]).where(
+                    (mod_files.c.mod_id == mod_meta['id']) & (mod_files.c.vanilla_minor_version == minor_version))
+                ).scalar()
 
                 if stored_file_name == available_file_name:
                     # file is already current

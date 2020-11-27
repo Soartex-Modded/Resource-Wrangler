@@ -55,10 +55,23 @@ def download_resource(resource):
     # DOWNLOAD FROM CURSEFORGE
     if "download_project_id" in resource:
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/56.0.2924.76 Safari/537.36',
         }
+
+        if 'download_file_id' in resource:
+            file_id = resource['download_file_id']
+        else:
+            project_url = f'https://addons-ecs.forgesvc.net/api/v2/addon/{resource["download_project_id"]}'
+            # get files from any version
+            latest_files = requests.get(project_url).json()['gameVersionLatestFiles']
+            # filter to files in minor version
+            file_id = max(i['projectFileId'] for i in latest_files
+                          if i['gameVersion'].split('.')[1] == str(resource['minor_version']))
+
         download_url = requests.get(
-            f"https://addons-ecs.forgesvc.net/api/v2/addon/{resource['download_project_id']}/file/{resource['download_file_id']}/download-url",
+            f"https://addons-ecs.forgesvc.net/api/v2/addon/{resource['download_project_id']}/file/{file_id}/download-url",
             headers=headers).text
 
         with tempfile.TemporaryDirectory() as temp_download_dir:

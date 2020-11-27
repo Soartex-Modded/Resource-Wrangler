@@ -3,6 +3,8 @@ import os
 import shutil
 from collections import defaultdict, Counter
 import hashlib
+from json.decoder import JSONDecodeError
+
 from PIL import Image
 import numpy as np
 
@@ -238,7 +240,10 @@ def port_patches(
                 prior_mod_info_path = os.path.join(resource_prior_patches_dir, prior_patch_name, 'mod.json')
                 if os.path.exists(prior_mod_info_path):
                     with open(prior_mod_info_path, 'r') as prior_mod_info_file:
-                        prior_mod_info = json.load(prior_mod_info_file)
+                        try:
+                            prior_mod_info = json.load(prior_mod_info_file)
+                        except JSONDecodeError:
+                            print(f"Failed parsing {prior_mod_info_path}")
 
             default_mod_info_path = os.path.join(default_post_patches_dir, default_patch_name, 'mod.json')
             default_mod_info = {}

@@ -29,31 +29,37 @@ def run(pipeline: str, resources=None, pipelines=None, resources_path=None, pipe
     :param pipelines_path: location to load pipelines from. Pipelines are a list of tasks
     """
 
-    if pipelines is None:
-        if pipelines_path is None:
-            pipelines_path = os.environ.get(ENV_VAR_PIPELINES_CONFIG)
-
-        if pipelines_path is None:
-            print("Using default package pipelines.")
-            pipelines_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "pipelines.toml")
-
-        with open(pipelines_path, "r") as pipelines_file:
-            pipelines = toml.load(pipelines_file)
-
-    if resources is None:
-        if resources_path is None:
-            resources_path = os.environ.get(ENV_VAR_RESOURCES_CONFIG)
-
-        if resources_path is None:
-            print("Using default package resources.")
-            resources_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "resources.toml")
-
-        with open(resources_path, "r") as resources_file:
-            resources = toml.load(resources_file)
+    pipelines = load_pipelines(pipelines, pipelines_path)
+    resources = load_resources(resources, resources_path)
 
     #
     # EXECUTE PIPELINE
     runners.run_pipeline({'pipeline': pipeline}, resources, pipelines)
+
+
+def load_pipelines(pipelines=None, pipelines_path=None):
+    if pipelines_path is None:
+        pipelines_path = os.environ.get(ENV_VAR_PIPELINES_CONFIG)
+
+    if pipelines_path is None:
+        print("Using default package pipelines.")
+        pipelines_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "pipelines.toml")
+
+    with open(pipelines_path, "r") as pipelines_file:
+        return {**toml.load(pipelines_file), **(pipelines or {})}
+
+
+def load_resources(resources=None, resources_path=None):
+    if resources_path is None:
+        resources_path = os.environ.get(ENV_VAR_RESOURCES_CONFIG)
+
+    if resources_path is None:
+        print("Using default package resources.")
+        resources_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "resources.toml")
+
+    with open(resources_path, "r") as resources_file:
+        return {**toml.load(resources_file), **(resources or {})}
+
 
 
 if __name__ == "__main__":
