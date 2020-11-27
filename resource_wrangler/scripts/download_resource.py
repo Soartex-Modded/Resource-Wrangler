@@ -65,7 +65,7 @@ def download_resource(resource):
         else:
             project_url = f'https://addons-ecs.forgesvc.net/api/v2/addon/{resource["download_project_id"]}'
             # get files from any version
-            latest_files = requests.get(project_url).json()['gameVersionLatestFiles']
+            latest_files = requests.get(project_url, headers=headers).json()['gameVersionLatestFiles']
             # filter to files in minor version
             file_id = max(i['projectFileId'] for i in latest_files
                           if i['gameVersion'].split('.')[1] == str(resource['minor_version']))

@@ -1,25 +1,29 @@
 import argparse
 import os
+import shutil
+
 from resource_wrangler.scripts.deploy import universal_build, universal_deploy
 
 
 parser = argparse.ArgumentParser(description='Deploy a universal resource pack.')
-parser.add_argument('pack', help='"fanver" or "jstr"')
+parser.add_argument('pack', help='"fanver", "invictus" or "jstr"')
 parser.add_argument('minor_version', type=int)
-parser.add_argument('project_id', type=int)
 
 args = parser.parse_args()
-output_dir = os.path.expanduser(f'~/graphics_merged/{args.pack}/universal-1.{args.minor_version}.x')
+output_dir = os.path.expanduser(f'~/graphics_merged/{args.pack}/Universal-1.{args.minor_version}.x')
 
-# print(f">>>> Building Universal 1.{args.minor_version}.x Pack")
-# universal_build(
-#     pack=args.pack,
-#     minor_version=args.minor_version,
-#     output_dir=output_dir)
+if os.path.exists(output_dir):
+    print('>> Removing output dir')
+    shutil.rmtree(output_dir, ignore_errors=True)
 
-print(f">>>> Deploying Universal 1.{args.minor_version}.x Pack")
+print(f">>>> Building {args.pack} universal 1.{args.minor_version}.x pack")
+universal_build(
+    pack=args.pack,
+    minor_version=args.minor_version,
+    output_dir=output_dir)
+
+print(f">>>> Deploying {args.pack} universal 1.{args.minor_version}.x pack")
 universal_deploy(
     pack=args.pack,
     minor_version=args.minor_version,
-    pack_dir=output_dir,
-    project_id=args.project_id)
+    pack_dir=output_dir)

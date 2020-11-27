@@ -4,6 +4,8 @@ from distutils.dir_util import copy_tree
 import distutils
 import json
 
+extensions = ('.png', '.properties', '.txt', '.info', '.mcmeta', '.json')
+
 
 def set_deep(obj, path, value):
     for key in path[:-1]:
@@ -13,7 +15,7 @@ def set_deep(obj, path, value):
 
 def merge_patches(
         patches_dir, pack_dir,
-        pack_format: int, enable_patch_map: bool = True, delete_defaults: bool = True,
+        pack_format: int, enable_patch_map: bool = True,
         blacklist=None):
     """
     delete and (re)make the resource pack of merged patches
@@ -21,7 +23,6 @@ def merge_patches(
     :param pack_dir: location to output merged patches
     :param pack_format: necessary metadata to build pack.json
     :param enable_patch_map: create a patch_map.json file with the source patch of each texture
-    :param delete_defaults: delete filenames starting with __default_
     :param blacklist: patches to omit from the merged pack
     """
     patches_dir = os.path.expanduser(patches_dir)
@@ -84,10 +85,10 @@ def merge_patches(
 
     for file_dir, _, file_names in os.walk(pack_dir):
         for file_name in file_names:
-            if delete_defaults:
-                if file_name.startswith("__default_"):
-                    os.remove(os.path.join(file_dir, file_name))
-
-            # the merged pack does not need
-            if file_name.endswith('.xcf') or file_name.endswith('.psd'):
+            if file_name.startswith("__default_"):
                 os.remove(os.path.join(file_dir, file_name))
+
+            # filter files in the merged pack
+            if any(file_name.endswith(extension) for extension in extensions):
+                continue
+            os.remove(os.path.join(file_dir, file_name))

@@ -1,6 +1,3 @@
-import tempfile
-import zipfile
-
 import requests
 
 from resource_wrangler.main import run, load_resources
@@ -11,28 +8,45 @@ from datetime import datetime
 
 # patches to omit from the universal pack, for each minor version
 blacklists = {
-    7: ['Project_Red', 'Buildcraft', 'GregTech_v6']  # These patches are replaced by Buildcraft_7 and Project_Red_4_7
+    # These patches are replaced by Project_Red_4_7, Buildcraft_7 and GregTech
+    7: ['Project_Red', 'Buildcraft', 'GregTech_v6']
 }
+
+# pack_formats = {1: [6, 7, 8], 2: [9, 10], 3: [11, 12], 4: [13, 14], 5: [15], 6: [16], 7: [17]}
+
+# mapping of 1.{minor_version}.x: gameVersionTypeID
+version_ids = {5: 11, 6: 6, 7: 5, 8: 4, 10: 572, 11: 599, 12: 628, 15: 68722, 16: 70886}
+
+project_ids = {'fanver': 227770, 'invictus': 228360}
 
 
 def universal_build(pack, minor_version, output_dir):
+
+    modded_pack = pack
+    if modded_pack == 'invictus':
+        modded_pack = 'fanver'
+
     resources = load_resources()
 
     patches_dir = os.environ.get(
         'TRAVIS_BUILD_DIR',
-        os.path.expanduser(resources[f'{pack}-modded-1.{minor_version}.x']['patches_dir']))
+        os.path.expanduser(resources[f'{modded_pack}-modded-1.{minor_version}.x']['patches_dir']))
+
+    merged_patches_dir = os.path.expanduser(resources[f'{modded_pack}-modded-1.{minor_version}.x']['pack_dir'])
+    if os.path.exists(merged_patches_dir):
+        shutil.rmtree(merged_patches_dir)
 
     # download resources and merge patches
     run('prepare_universal',
         pipelines={'prepare_universal': [
             {'task': 'download_resource', 'resource': f'{pack}-vanilla-1.{minor_version}.x'},
-            {'task': 'download_resource', 'resource': f'{pack}-modded-base'} if minor_version > 11 and pack == 'fanver' else None,
+            {'task': 'download_resource', 'resource': f'{modded_pack}-modded-base'} if minor_version > 11 and modded_pack == 'fanver' else None,
             {'task': 'merge_patches', 'resource': 'temp-modded', 'blacklist': blacklists.get(minor_version)},
         ]},
         resources={
             'temp-modded': {
                 'patches_dir': patches_dir,
-                'pack_dir': resources[f'{pack}-modded-1.{minor_version}.x']['pack_dir'],
+                'pack_dir': resources[f'{modded_pack}-modded-1.{minor_version}.x']['pack_dir'],
                 'enable_patch_map': False
             }
         })
@@ -44,24 +58,38 @@ def universal_build(pack, minor_version, output_dir):
     copy_tree(
         os.path.expanduser(resources[f'{pack}-vanilla-1.{minor_version}.x']['download_dir']),
         output_dir)
-    if minor_version > 11 and pack == 'fanver':
+    if minor_version > 11 and modded_pack == 'fanver':
         print(">> Copy modded base assets into output_dir")
         copy_tree(
-            os.path.join(os.path.expanduser(resources[f'{pack}-modded-base']['download_dir']), 'assets'),
+            os.path.join(os.path.expanduser(resources[f'{modded_pack}-modded-base']['download_dir']), 'assets'),
             os.path.join(output_dir, 'assets'))
     print(">> Copy merged patch assets into output_dir")
     copy_tree(
-        os.path.expanduser(resources[f'{pack}-modded-1.{minor_version}.x']['pack_dir']),
+        merged_patches_dir,
         output_dir)
 
-    blacklist_extensions = ['.xcf', '.psd', '.iml', '.xml']
-    print(f'>> Pruning {blacklist_extensions}')
+    whitelist_extensions = ['.png', '.txt', '.properties']
+    if minor_version > 5:
+        whitelist_extensions.extend(['.json', '.mcmeta'])
+
+    if minor_version == 5:
+        # Curseforge considers periods in folder names to be file extensions
+        for walk_dir, folder_names, _ in os.walk(output_dir):
+            for folder_name in folder_names:
+                if '.' in folder_name:
+                    hazard_dir = os.path.join(walk_dir, folder_name)
+                    print("Removing hazard dir:", hazard_dir)
+                    shutil.rmtree(hazard_dir, ignore_errors=True)
+
+    print(f'>> Pruning to {whitelist_extensions}')
     for file_dir, _, file_names in os.walk(output_dir):
         for file_name in file_names:
-            if any(file_name.endswith(extension) for extension in blacklist_extensions):
-                os.remove(os.path.join(file_dir, file_name))
+            if any(file_name.endswith(extension) for extension in whitelist_extensions):
+                continue
+            print('Removing:', os.path.join(file_dir, file_name))
+            os.remove(os.path.join(file_dir, file_name))
 
-    if pack == 'fanver':
+    if modded_pack == 'fanver':
         print(f'>> Writing fanver license/credits')
         with open(os.path.join(output_dir, 'license_modded_fanver.txt'), 'w') as modded_license_file:
             modded_license_file.write(f"""
@@ -94,40 +122,44 @@ Please find them in their respective modded repositories.
 """)
 
 
-def universal_deploy(pack, minor_version, pack_dir, project_id):
+def universal_deploy(pack, minor_version, pack_dir, cleanup=False):
 
-    CURSEFORGE_FANVER_TOKEN = os.environ[f'CURSEFORGE_{pack.upper()}_TOKEN']
+    CURSEFORGE_TOKEN = os.environ[f'CURSEFORGE_{pack.upper()}_TOKEN']
 
     if pack == 'fanver':
-        display_name = 'Fanver-Universal'
-        release_filename = 'Soartex_Fanver_Modded_Universal.zip'
+        now = datetime.now()
+        display_name = f'Fanver-Universal-1.{minor_version}.x'
+        release_filename = f'Soartex_Fanver_Universal_1.{minor_version}.x_{now.year}_{now.month:02}_{now.day:02}.zip'
+    elif pack == 'invictus':
+        now = datetime.now()
+        display_name = f'Invictus-Universal-1.{minor_version}.x'
+        release_filename = f'Invictus_Universal_1.{minor_version}.x_{now.year}_{now.month:02}_{now.day:02}.zip'
     else:
         raise ValueError('Unrecognized pack name')
 
     print(f'>> Retrieving relevant game ids')
-    version_data = requests.get("https://minecraft.curseforge.com/api/game/versions", headers={
-        "X-Api-Token": CURSEFORGE_FANVER_TOKEN
-    }).json()
-
-    # mapping of 1.{minor_version}.x: gameVersionTypeID
-    version_ids = {7: 5, 8: 4, 10: 572, 11: 599, 12: 628, 15: 68722, 16: 70886}
+    version_data = requests.get(
+        "https://minecraft.curseforge.com/api/game/versions",
+        headers={"X-Api-Token": CURSEFORGE_TOKEN}).json()
 
     game_ids = [i['id'] for i in version_data
-                if i['name'].startswith(f'1.{str(minor_version)}')
+                if i['name'].startswith(f'1.{minor_version}')
                 and i['gameVersionTypeID'] == version_ids[int(minor_version)]]
 
-    with tempfile.TemporaryDirectory() as temp_dir, \
-            zipfile.ZipFile(os.path.join(temp_dir, release_filename), 'w', zipfile.ZIP_DEFLATED) as release_file:
+    print("game ids", game_ids)
 
-        print('>> Building the release .zip')
-        for walk_dir, _, file_names in os.walk(pack_dir):
-            for file_name in file_names:
-                release_file.write(os.path.join(walk_dir, file_name))
+    release_path = os.path.join(os.path.dirname(pack_dir), release_filename)
+    if os.path.exists(release_path):
+        os.remove(release_path)
 
-        print('>> Uploading the release .zip')
+    print('>> Building the release .zip')
+    shutil.make_archive(release_path.replace('.zip', ''), 'zip', pack_dir)
+
+    print('>> Uploading the release .zip')
+    with open(release_path, 'rb') as release_file:
         requests.post(
-            f"https://minecraft.curseforge.com/api/projects/{project_id}/upload-file",
-            headers={"X-Api-Token": CURSEFORGE_FANVER_TOKEN},
+            f"https://minecraft.curseforge.com/api/projects/{project_ids[pack]}/upload-file",
+            headers={"X-Api-Token": CURSEFORGE_TOKEN},
             data={
                 "changelog": f"https://github.com/Soartex-Modded/Modded-1.{minor_version}.x/commits/master",
                 "changelogType": "text",
@@ -136,5 +168,8 @@ def universal_deploy(pack, minor_version, pack_dir, project_id):
                 "releaseType": "release"
             },
             files={
-                'file': release_file
+                'file': (release_filename, release_file)
             })
+
+    if cleanup:
+        os.remove(release_path)
