@@ -3,7 +3,11 @@ import os
 from resource_wrangler.gui_builder import detect_regions, build_gui
 from resource_wrangler.main import run
 
-minor_versions = [16, 15, 12, 11, 10, 8, 7, 6, 5]
+minor_versions = {
+    'fanver': [16, 15, 12, 11, 10, 8, 7, 6, 5],
+    'jstr': [5, 6, 7, 8, 9, 10, 12, 16],
+    'faithful': [5, 6, 7, 8, 10, 11, 12, 16]
+}
 
 
 def test_gui_builder():
@@ -33,7 +37,7 @@ def port_complete_graph(resource_pack_name):
     import timeit
 
     # reverse-order so that newer textures get priority
-    mc_versions = [f'1.{minor_version}.x' for minor_version in reversed(sorted(minor_versions))]
+    mc_versions = [f'1.{minor_version}.x' for minor_version in reversed(sorted(minor_versions[resource_pack_name]))]
     pipeline = []
     for from_version, to_version in itertools.combinations_with_replacement(mc_versions, r=2):
         pipeline.append({
@@ -42,12 +46,14 @@ def port_complete_graph(resource_pack_name):
             "default_post": f"default-modded-{to_version}",
             "resource_prior": f"{resource_pack_name}-modded-{from_version}",
             "resource_post": f"{resource_pack_name}-modded-{to_version}",
-            "action": "copy"
+            "action": "copy",
+            "all_patch": resource_pack_name == 'faithful'
         })
-        pipeline.append({
-            'task': 'merge_patches',
-            'resource': f'{resource_pack_name}-modded-{to_version}'
-        })
+        if resource_pack_name != 'faithful':
+            pipeline.append({
+                'task': 'merge_patches',
+                'resource': f'{resource_pack_name}-modded-{to_version}'
+            })
         if from_version != to_version:
             pipeline.append({
                 "task": "port_patches",
@@ -55,12 +61,14 @@ def port_complete_graph(resource_pack_name):
                 "default_post": f"default-modded-{from_version}",
                 "resource_prior": f"{resource_pack_name}-modded-{to_version}",
                 "resource_post": f"{resource_pack_name}-modded-{from_version}",
-                "action": "copy"
+                "action": "copy",
+                "all_patch": resource_pack_name == 'faithful'
             })
-            pipeline.append({
-                'task': 'merge_patches',
-                'resource': f'{resource_pack_name}-modded-{from_version}'
-            })
+            if resource_pack_name != 'faithful':
+                pipeline.append({
+                    'task': 'merge_patches',
+                    'resource': f'{resource_pack_name}-modded-{from_version}'
+                })
 
     elapsed_time = timeit.Timer(
         lambda: run(
@@ -71,6 +79,7 @@ def port_complete_graph(resource_pack_name):
     print(f"Elapsed time: {elapsed_time}")
 
 
-port_complete_graph("fanver")
+# port_complete_graph("fanver")
 # port_complete_graph("jstr")
+# port_complete_graph("faithful")
 

@@ -19,7 +19,8 @@ def port_patches(
         resource_post_dir,
         resource_prior_dir=None,
         default_post_patches_dir=None,
-        action=None):
+        action=None,
+        all_patch=False):
     """
     Detect file movements between mod/game versions via image hashes.
 
@@ -33,6 +34,7 @@ def port_patches(
     :param resource_prior_dir: original resource pack (optional)
     :param default_post_patches_dir: ported default patches (optional)
     :param action: one of [None, 'copy', 'move', 'copy-overwrite']
+    :param all_patch: if True, force patch_name to be "All" (for unified packs like faithful)
     """
 
     default_prior_dir = os.path.expanduser(default_prior_dir)
@@ -105,14 +107,17 @@ def port_patches(
             # TODO: evaluate fitness of each match, and choose the best? seems very situational
             best_match = matches[0]
 
-            default_patch_name, patch_name = infer_resource_patch_name(
-                default_post_patches_dir,
-                resource_post_patches_dir,
-                default_post_patch_map,
-                resource_prior_patch_map,
-                resource_post_patch_map,
-                relative_path,
-                matches)
+            if all_patch:
+                default_patch_name, patch_name = 'All', 'All'
+            else:
+                default_patch_name, patch_name = infer_resource_patch_name(
+                    default_post_patches_dir,
+                    resource_post_patches_dir,
+                    default_post_patch_map,
+                    resource_prior_patch_map,
+                    resource_post_patch_map,
+                    relative_path,
+                    matches)
 
             if patch_name is None:
                 continue
@@ -147,13 +152,14 @@ def port_patches(
 
                 perform_action(prior_resource_meta_path, post_resource_path + '.mcmeta', action)
 
-            update_mod_json(
-                default_post_patches_dir,
-                resource_prior_patches_dir,
-                resource_post_patches_dir,
-                relative_path,
-                default_patch_name,
-                patch_name)
+            if not all_patch:
+                update_mod_json(
+                    default_post_patches_dir,
+                    resource_prior_patches_dir,
+                    resource_post_patches_dir,
+                    relative_path,
+                    default_patch_name,
+                    patch_name)
 
     if os.path.exists(os.path.join(resource_post_patches_dir, UNKNOWN_PATCH_NAME)):
         print("Check the _UNKNOWN folder for textures ported into domains that did not belong to a previous patch.")

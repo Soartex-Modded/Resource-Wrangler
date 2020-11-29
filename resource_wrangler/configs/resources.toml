@@ -65,6 +65,14 @@ patches_dir = "~/graphics/default/Modded-1.8.x/"
 pack_dir = "~/graphics_merged/default/Modded-1.8.x/"
 pack_format = 1
 
+["default-modded-1.9.x"]
+mods_dirs = [
+    "~/graphics/default/Downloaded-Mods-1.9.x/"
+]
+patches_dir = "~/graphics/default/Modded-1.9.x/"
+pack_dir = "~/graphics_merged/default/Modded-1.9.x/"
+pack_format = 2
+
 ["default-modded-1.10.x"]
 mods_dirs = [
     "/Applications/MultiMC.app/Contents/MacOS/instances/FTB Beyond/.minecraft/mods",
@@ -396,12 +404,33 @@ patches_dir = "~/graphics/jstr/Modded-1.5.x/"
 pack_format = 1
 pack_dir = "~/graphics_merged/jstr/Modded-1.5.x/"
 
+["jstr-modded-1.6.x"]
+download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.6.x.git"
+download_dir = "~/graphics/jstr/Modded-1.6.x/"
+patches_dir = "~/graphics/jstr/Modded-1.6.x/"
+pack_format = 1
+pack_dir = "~/graphics_merged/jstr/Modded-1.6.x/"
+
 ["jstr-modded-1.7.x"]
 download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.7.x.git"
 download_dir = "~/graphics/jstr/Modded-1.7.x/"
 patches_dir = "~/graphics/jstr/Modded-1.7.x/"
 pack_format = 1
 pack_dir = "~/graphics_merged/jstr/Modded-1.7.x/"
+
+["jstr-modded-1.8.x"]
+download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.8.x.git"
+download_dir = "~/graphics/jstr/Modded-1.8.x/"
+patches_dir = "~/graphics/jstr/Modded-1.8.x/"
+pack_format = 1
+pack_dir = "~/graphics_merged/jstr/Modded-1.8.x/"
+
+["jstr-modded-1.9.x"]
+download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.9.x.git"
+download_dir = "~/graphics/jstr/Modded-1.9.x/"
+patches_dir = "~/graphics/jstr/Modded-1.9.x/"
+pack_format = 1
+pack_dir = "~/graphics_merged/jstr/Modded-1.9.x/"
 
 ["jstr-modded-1.10.x"]
 download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.10.x.git"
@@ -417,7 +446,63 @@ patches_dir = "~/graphics/jstr/Modded-1.12.x/"
 pack_format = 3
 pack_dir = "~/graphics_merged/jstr/Modded-1.12.x/"
 
-["jstr-modded-1.15.x"]
-patches_dir = "~/graphics/jstr/Modded-1.15.x/"
-pack_dir = "~/graphics_merged/jstr/Modded-1.15.x/"
-pack_format = 5
+["jstr-modded-1.16.x"]
+download_repo = "git@github.com:John-Smith-Modded/JSTR-Modded-1.16.x.git"
+download_dir = "~/graphics/jstr/Modded-1.16.x/"
+patches_dir = "~/graphics/jstr/Modded-1.16.x/"
+pack_format = 6
+pack_dir = "~/graphics_merged/jstr/Modded-1.16.x/"
+
+["faithful-modded-1.5.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.5.2.git"
+download_dir = "~/graphics/faithful/Modded-1.5.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.5.x/"
+pack_format = 1
+pack_dir = "~/graphics/faithful/Modded-1.5.x/All/"
+
+["faithful-modded-1.6.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.6.4.git"
+download_dir = "~/graphics/faithful/Modded-1.6.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.6.x/"
+pack_format = 1
+pack_dir = "~/graphics/faithful/Modded-1.6.x/All/"
+
+["faithful-modded-1.7.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.7.10.git"
+download_dir = "~/graphics/faithful/Modded-1.7.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.7.x/"
+pack_format = 1
+pack_dir = "~/graphics/faithful/Modded-1.7.x/All/"
+
+["faithful-modded-1.8.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.8.9.git"
+download_dir = "~/graphics/faithful/Modded-1.8.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.8.x/"
+pack_format = 1
+pack_dir = "~/graphics/faithful/Modded-1.8.x/All/"
+
+["faithful-modded-1.10.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.10.2.git"
+download_dir = "~/graphics/faithful/Modded-1.10.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.10.x/"
+pack_format = 2
+pack_dir = "~/graphics/faithful/Modded-1.10.x/All/"
+
+["faithful-modded-1.11.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.11.2.git"
+download_dir = "~/graphics/faithful/Modded-1.11.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.11.x/"
+pack_format = 3
+pack_dir = "~/graphics/faithful/Modded-1.11.x/All/"
+
+["faithful-modded-1.12.x"]
+download_repo = "git@github.com:F32Organization/Faithful32-1.12.2.git"
+download_dir = "~/graphics/faithful/Modded-1.12.x/All/"
+patches_dir = "~/graphics/faithful/Modded-1.12.x/"
+pack_format = 3
+pack_dir = "~/graphics/faithful/Modded-1.12.x/All/"
+
+["faithful-modded-1.16.x"]
+patches_dir = "~/graphics/faithful/Modded-1.16.x/"
+pack_format = 3
+pack_dir = "~/graphics/faithful/Modded-1.16.x/All/"

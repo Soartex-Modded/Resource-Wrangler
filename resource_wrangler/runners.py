@@ -134,7 +134,8 @@ def run_port_patches(config, resources, pipelines):
         resource_post_dir=resources[config['resource_post']]['pack_dir'],
         resource_prior_dir=resources[config['resource_prior']]['pack_dir'],
         default_post_patches_dir=resources[config['default_post']]['patches_dir'],
-        action=config.get('action')
+        action=config.get('action'),
+        all_patch=config.get('all_patch')
     )
 
 
