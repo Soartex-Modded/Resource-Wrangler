@@ -3,6 +3,8 @@ import os
 from resource_wrangler.gui_builder import detect_regions, build_gui
 from resource_wrangler.main import run
 
+minor_versions = [16, 15, 12, 11, 10, 8, 7, 6, 5]
+
 
 def test_gui_builder():
     template_dir = "/Users/michael/graphics/fanver/Resource-Wrangler/resource_wrangler/configs/gui_templates/"
@@ -31,7 +33,7 @@ def port_complete_graph(resource_pack_name):
     import timeit
 
     # reverse-order so that newer textures get priority
-    mc_versions = ['1.12.x', '1.11.x', '1.10.x', '1.8.x', '1.7.x', '1.6.x', '1.5.x']
+    mc_versions = [f'1.{minor_version}.x' for minor_version in reversed(sorted(minor_versions))]
     pipeline = []
     for from_version, to_version in itertools.combinations_with_replacement(mc_versions, r=2):
         pipeline.append({

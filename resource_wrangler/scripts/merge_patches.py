@@ -15,7 +15,7 @@ def set_deep(obj, path, value):
 
 def merge_patches(
         patches_dir, pack_dir,
-        pack_format: int, enable_patch_map: bool = True,
+        pack_format: int = None, enable_patch_map: bool = True,
         blacklist=None):
     """
     delete and (re)make the resource pack of merged patches

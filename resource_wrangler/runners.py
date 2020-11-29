@@ -36,7 +36,7 @@ def run_pipeline(config, resources, pipelines):
         'build_guis': run_build_guis,
         'insert_placeholders': run_insert_placeholders,
         'find_similar': run_find_similar,
-        'detect_broken_animations': run_detect_broken_animations
+        'detect_broken_animations': run_detect_broken_animations,
     }
 
     if config['pipeline'] not in pipelines:

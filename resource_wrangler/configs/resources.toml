@@ -188,6 +188,12 @@ download_dir = "~/graphics/fanver/Vanilla-1.16.x/Vanilla/"
 patches_dir = "~/graphics/fanver/Vanilla-1.16.x/"
 pack_dir = "~/graphics/fanver/Vanilla-1.16.x/Vanilla/"
 
+["fanver-modded-1.4.x"]
+download_repo = "git@github.com:Soartex-Modded/Modded-1.4.x.git"
+download_dir = "~/graphics/fanver/Modded-1.4.x/"
+patches_dir = "~/graphics/fanver/Modded-1.4.x/"
+pack_format = 1
+pack_dir = "~/graphics_merged/fanver/Modded-1.4.x/"
 
 ["fanver-modded-1.5.x"]
 download_repo = "git@github.com:Soartex-Modded/Modded-1.5.x.git"

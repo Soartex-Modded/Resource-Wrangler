@@ -156,20 +156,51 @@ def universal_deploy(pack, minor_version, pack_dir, cleanup=False):
     shutil.make_archive(release_path.replace('.zip', ''), 'zip', pack_dir)
 
     print('>> Uploading the release .zip')
-    with open(release_path, 'rb') as release_file:
-        requests.post(
-            f"https://minecraft.curseforge.com/api/projects/{project_ids[pack]}/upload-file",
-            headers={"X-Api-Token": CURSEFORGE_TOKEN},
-            data={
-                "changelog": f"https://github.com/Soartex-Modded/Modded-1.{minor_version}.x/commits/master",
-                "changelogType": "text",
-                "displayName": display_name,
-                "gameVersions": game_ids,
-                "releaseType": "release"
-            },
-            files={
-                'file': (release_filename, release_file)
-            })
+    # with open(release_path, 'rb') as release_file:
+    #     requests.post(
+    #         f"https://minecraft.curseforge.com/api/projects/{project_ids[pack]}/upload-file",
+    #         headers={"X-Api-Token": CURSEFORGE_TOKEN},
+    #         data={
+    #             "changelog": f"https://github.com/Soartex-Modded/Modded-1.{minor_version}.x/commits/master",
+    #             "changelogType": "text",
+    #             "displayName": display_name,
+    #             "gameVersions": game_ids,
+    #             "releaseType": "release"
+    #         },
+    #         files={
+    #             'file': (release_filename, release_file)
+    #         })
 
     if cleanup:
         os.remove(release_path)
+
+
+if __name__ == "__main__":
+    # call this like:
+    # python3 resource_wrangler/scripts/universal.py --deploy fanver 16
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Build/Deploy a universal resource pack.')
+    parser.add_argument('--deploy', action="store_true")
+    parser.add_argument('pack', help='"fanver", "invictus" or "jstr"')
+    parser.add_argument('minor_version', type=int)
+
+    args = parser.parse_args()
+    output_dir = os.path.expanduser(f'~/graphics_merged/{args.pack}/Universal-1.{args.minor_version}.x')
+
+    if os.path.exists(output_dir):
+        print('>> Removing output dir')
+        shutil.rmtree(output_dir, ignore_errors=True)
+
+    print(f">>>> Building {args.pack} universal 1.{args.minor_version}.x pack")
+    universal_build(
+        pack=args.pack,
+        minor_version=args.minor_version,
+        output_dir=output_dir)
+
+    if args.deploy:
+        print(f">>>> Deploying {args.pack} universal 1.{args.minor_version}.x pack")
+        universal_deploy(
+            pack=args.pack,
+            minor_version=args.minor_version,
+            pack_dir=output_dir)
